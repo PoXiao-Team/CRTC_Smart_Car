@@ -18,6 +18,7 @@
 | [docs/control-architecture.md](docs/control-architecture.md)         | 遥控链路三阶段（有线 → 蓝牙 → PS2）、指令协议、失联保护、软硬件协作清单 |
 | [docs/development-log.md](docs/development-log.md)                   | 开发日志（做了什么 + 为什么这样做）                      |
 
+视觉部分见分支View Sence.
 ## 规划中的文档
 
 `docs/` 下按需增补，不建空文件：
