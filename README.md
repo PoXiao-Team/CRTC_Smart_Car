@@ -333,6 +333,8 @@ yolo task=detect mode=train model=yolov8n.pt data=D:/Yolo/dataset_images/data.ya
 ```
 <!-- （其中data=之后填写你的data.yaml文件绝对地址，训练模型会生成在当前目录的一个叫runs的文件夹里） -->
 - 说明：
+- `model`后面写不写`yolov8n.pt`的绝对地址取决于你当前终端所在的目录
+- `data`应该指向data.yaml所在的地址
 - `epochs=50`:训练轮数，不宜过大，防止过拟合。
 - `batch=8`:批次大小。
 - `imgsz=640`:输入图像尺寸，YOLO 会将图片统一缩放至此尺寸。
@@ -344,7 +346,8 @@ yolo task=detect mode=train model=yolov8n.pt data=D:/Yolo/dataset_images/data.ya
 yolo task=detect mode=predict model=best.pt source=test.jpg conf=0.25
 ```
 - 说明：
-- `model`后面写不写模型的绝对地址取决于你当前终端所在的目录，source之后可以填写文件夹的地址来同时验证多个图片
+- `model`后面写不写模型的绝对地址取决于你当前终端所在的目录
+- `source`之后可以填写文件夹的地址来同时验证多个图片
 - `conf`指置信度阈值，低于此值不会画框，可以灵活调整
 
 ## 8. 待补章节
