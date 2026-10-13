@@ -1,0 +1,50 @@
+# ============================================================
+# CRTC_Smart_Car .gitignore
+# 目的：管住构建产物、训练输出与临时文件，防止误提交。
+# 大二进制资料（CAD / PCB 工程 / 数据集 / 模型权重）的入库
+# 策略见 README「外部资料与入库规划」章。
+# ============================================================
+
+# ---------- 构建产物 ----------
+# ROS 2 / colcon
+build/
+install/
+log/
+# CMake 生成物
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+
+# ---------- Python / 训练产物 ----------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+# YOLO 训练输出（模型权重如需入库请走 Git LFS 或 Release 外链，见 README）
+runs/
+# 数据集（体积大，不入库）
+datasets/
+dataset_images/
+
+# ---------- 编辑器与系统临时文件 ----------
+# 如需共享 VS Code 配置，改为选择性提交（例如仅保留 !.vscode/settings.json）
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+*.swp
+*.swo
+
+# ---------- CAD / EDA 临时与备份文件 ----------
+*.bak
+*.tmp
+# 立创 EDA 等工程软件的备份后缀如与上不符，按实际补充
+
+# ---------- 压缩包（大文件走外链，见 README） ----------
+*.zip
+*.7z
+*.rar
+*.tar.gz
