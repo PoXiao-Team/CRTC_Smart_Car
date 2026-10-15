@@ -1,0 +1,30 @@
+﻿网络名,类别,端点(元件.引脚),端点数,建议线宽(mil),说明
+VBAT,电源,"J1.BAT+, U1.IN+, U2.IN+, C6.+",4,100,电池正（经官方无线继电器）→ 两块 mini 输入；7.0～8.4V；峰值需 156 mil 单线（超出实用上限），改用：铺铜区域 + 双面并走（每层 100 mil）+ 大电流段开窗加锡，等效截面积 ≥ 215 mil²
+GND,电源,"J1.BAT-, U1.IN-, U1.OUT-, U2.IN-, U2.OUT-, U3A.G, U3B.G1, U3B.G2, U4A.GND1, U4B.GND2, U4B.GND3, U5A.GND1, U5B.GND2, U5B.GND3, C1.-, C2.-, C3.-, C4.2, C5.2, C6.-, J6.G, J7.GND, J8.GND",23,100,全板唯一地网（不得出现 VSS / GNDA / AGND 等别名）；铺铜网络；峰值需 156 mil 单线（超出实用上限），改用：铺铜区域 + 双面并走（每层 100 mil）+ 大电流段开窗加锡，等效截面积 ≥ 215 mil²
++5V,电源,"U1.OUT+, U3A.5V, C3.+, C5.1, J8.+5V",5,10,只给核心板与调试口，禁止挂马达/舵机
++3V3,电源,"U3A.3V3, U3B.3V3, J7.VCC",3,10,由核心板板载 LDO 提供，只带 PS2 接收器
+VM,电源,"U2.OUT+, U4B.VM, U5B.VM, J6.V, C1.+, C2.+, C4.1",7,100,mini#2 输出 5.0V；严禁与 VBAT 有任何连接；走线按最宽处理；峰值需 124 mil 单线（超出实用上限），改用：铺铜区域 + 双面并走（每层 100 mil）+ 大电流段开窗加锡，等效截面积 ≥ 171 mil²
+DRV_F_AIN1,信号,"U3B.A6, U4A.AIN1",2,10,TIM3_CH1；PA6
+DRV_F_BIN1,信号,"U3B.A7, U4A.BIN1",2,10,TIM3_CH2；PA7
+DRV_F_AIN2,信号,"U3A.A8, U4A.AIN2",2,10,TIM1_CH1；PA8（TIM1 必须开 MOE 才有输出）
+DRV_F_BIN2,信号,"U3A.A9, U4A.BIN2",2,10,TIM1_CH2；PA9
+DRV_R_AIN1,信号,"U3B.B0, U5A.AIN1",2,10,TIM3_CH3；PB0
+DRV_R_BIN1,信号,"U3B.B1, U5A.BIN1",2,10,TIM3_CH4；PB1
+DRV_R_AIN2,信号,"U3A.A10, U5A.AIN2",2,10,TIM1_CH3；PA10
+DRV_R_BIN2,信号,"U3A.A11, U5A.BIN2",2,10,TIM1_CH4；PA11
+DRV_STBY,信号,"U3A.B12, U4A.STBY, U5A.STBY",3,10,三点同网；高电平使能，内部 500kΩ 下拉 → MCU 未初始化时电机不转（安全）
+PS2_DAT,信号,"U3A.B6, J7.DAT",2,10,软件 SPI，主入
+PS2_CMD,信号,"U3A.B5, J7.CMD",2,10,软件 SPI，主出
+PS2_CS,信号,"U3A.B3, J7.CS",2,10,PB3 默认 JTAG(JTDO)，必须关 JTAG 保 SWD 才能当普通 IO
+PS2_CLK,信号,"U3A.B4, J7.CLK",2,10,PB4 默认 JTAG(NJTRST)，同上；且必须禁用 TIM3 部分重映射
+SRV_PWM,信号,"U3A.B7, J6.S",2,10,TIM4_CH2，50Hz（周期 20ms，脉宽 0.5～2.5ms）
+DBG_TX,信号,"U3B.A2, J8.TX",2,10,USART2_TX
+DBG_RX,信号,"U3B.A3, J8.RX",2,10,USART2_RX
+MOTOR_FL_1,输出,"U4B.AO1, J2.1",2,30,左前马达脚 1
+MOTOR_FL_2,输出,"U4B.AO2, J2.2",2,30,左前马达脚 2
+MOTOR_FR_1,输出,"U4B.BO1, J3.1",2,30,右前马达脚 1
+MOTOR_FR_2,输出,"U4B.BO2, J3.2",2,30,右前马达脚 2
+MOTOR_RL_1,输出,"U5B.AO1, J4.1",2,30,左后马达脚 1
+MOTOR_RL_2,输出,"U5B.AO2, J4.2",2,30,左后马达脚 2
+MOTOR_RR_1,输出,"U5B.BO2, J5.1",2,30,右后马达脚 1（镜像接法：接 BO2）
+MOTOR_RR_2,输出,"U5B.BO1, J5.2",2,30,右后马达脚 2（镜像接法：接 BO1）

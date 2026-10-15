@@ -1,0 +1,96 @@
+{
+  "name": "CRTC2026_SmartCar_BaseBoard_V1",
+  "owner_uuid": "31f3c92f0e554ae499973cf217fc3f76",
+  "creator_uuid": "31f3c92f0e554ae499973cf217fc3f76",
+  "created_at": "2026-10-15 09:51:08",
+  "updated_at": "2026-10-15 09:51:08",
+  "modifier_uuid": "31f3c92f0e554ae499973cf217fc3f76",
+  "content": "",
+  "archive": false,
+  "cbb_project": 0,
+  "thumb": "",
+  "ticket": 1,
+  "g_ticket": 1,
+  "boards": [],
+  "block_symbol_attrs_groups": {},
+  "default_sheet": "a9788862d4df0cfc",
+  "branch_uuid": "",
+  "pcb_count": 0,
+  "format": "folder",
+  "profile": {
+    "boards": {
+      "7f1933b353e350b4": {
+        "uuid": "7f1933b353e350b4",
+        "title": "Board1",
+        "zIndex": 1
+      }
+    },
+    "schematics": {
+      "3495bdfd381b5b5c": {
+        "uuid": "3495bdfd381b5b5c",
+        "name": "Schematic1",
+        "board": "7f1933b353e350b4",
+        "source": "",
+        "version": "1792030607716",
+        "updateTime": 1792030607716
+      }
+    },
+    "sheets": {
+      "4e9fdd5aa4f9c6c7": {
+        "uuid": "4e9fdd5aa4f9c6c7",
+        "title": "P1",
+        "schematic_uuid": "3495bdfd381b5b5c",
+        "zIndex": 1,
+        "source": "",
+        "version": "1792030607716",
+        "updateTime": 1792030607716
+      }
+    },
+    "pcbs": {
+      "2a216cd56318901d": {
+        "uuid": "2a216cd56318901d",
+        "title": "PCB1",
+        "board": "7f1933b353e350b4",
+        "parent_uuid": "",
+        "source": "",
+        "version": "1792029069824",
+        "updateTime": 1792029069824
+      }
+    },
+    "panels": {
+      "3be808fe0d3da0ad": {
+        "uuid": "3be808fe0d3da0ad",
+        "title": "Panel1",
+        "zIndex": null
+      }
+    },
+    "blockSymbols": {},
+    "owner": {
+      "uuid": "31f3c92f0e554ae499973cf217fc3f76"
+    },
+    "simSchematics": {},
+    "simulations": {}
+  },
+  "config": {
+    "defaultSheet": "a9788862d4df0cfc",
+    "settings": {
+      "UNIVERSAL": {
+        "dataType": "UNIVERSAL",
+        "data": {
+          "allowLibRename": true,
+          "defaultNetName": true,
+          "wireMultipleNet": true,
+          "netFlagCrossLayerConnection": true,
+          "netLabelCrossPageConnection": true,
+          "busGenerateNetClass": true,
+          "relevanceDisplayRow": "SINGLE",
+          "relevanceBelongSchPage": "NAME",
+          "relevanceLocation": "ZONE",
+          "multipartCrossLayer": true,
+          "nonElectronicAddIntoBom": false,
+          "nonElectronicUpdatePcb": false
+        }
+      }
+    }
+  }
+}
