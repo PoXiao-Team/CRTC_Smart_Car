@@ -48,3 +48,5 @@ desktop.ini
 *.7z
 *.rar
 *.tar.gz
+# 例外：PCB 打样 Gerber 包为硬交付物，允许入库
+!hardware/pcb/**/gerber/*.zip

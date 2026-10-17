@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRTC2026 底板 V2 · 完整设计方案（实物对照版）</title>
+<style>
+:root{
+  --bg:#12151c; --panel:#1a1f29; --panel2:#202733; --line:#2e3846;
+  --tx:#e8edf4; --tx2:#a8b4c4; --tx3:#6f7d90;
+  --acc:#4ea1ff; --red:#ff6b6b; --grn:#4ade80; --yel:#fbbf24; --pur:#c084fc;
+  --r:10px; --mono:"Consolas","Cascadia Mono","Courier New",monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:14.5px;line-height:1.65}
+.wrap{max-width:980px;margin:0 auto;padding:28px 20px 80px}
+header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:22px}
+h1{font-size:22px;margin:0 0 6px}
+.sub{color:var(--tx2);font-size:13.5px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.tag{background:var(--panel2);border:1px solid var(--line);border-radius:999px;
+  padding:3px 12px;font-size:12.5px;color:var(--tx2)}
+h2{font-size:17px;margin:34px 0 10px;padding-left:10px;border-left:3px solid var(--acc)}
+h3{font-size:15px;margin:22px 0 8px;color:var(--tx)}
+p{margin:8px 0}
+.note{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:10px 14px;margin:10px 0;color:var(--tx2);font-size:13.5px}
+.warn{border-color:#6b3a3a;background:#241a1d;color:#ffb4b4}
+.ok{border-color:#2f5c45;background:#17241e;color:#a8e6c3}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--panel2);color:var(--tx2);font-weight:600;white-space:nowrap}
+tbody tr:nth-child(odd){background:rgba(255,255,255,.015)}
+tbody tr:hover{background:rgba(78,161,255,.07)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--panel2);
+  border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:#9ecbff}
+.badge{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:600}
+.b-net{background:#173049;color:#7cc0ff}
+.b-nc{background:#332a17;color:#f5c96a}
+.b-pwr{background:#173a2a;color:#7fe0a8}
+.b-m{background:#3a2130;color:#ff9ec2}
+.num{font-variant-numeric:tabular-nums}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:12px 14px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;color:var(--tx2)}
+.kv{color:var(--tx3)}
+footer{margin-top:44px;border-top:1px solid var(--line);padding-top:14px;color:var(--tx3);font-size:12.5px}
+@media (max-width:640px){table{font-size:12.5px}th,td{padding:5px 6px}.wrap{padding:16px 10px 60px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>CRTC2026 破晓战队 · 底板 V2 完整设计方案</h1>
+  <div class="sub">实物对照版 —— 严格按实物照片与已复核的引脚顺序，给出逐模块、逐引脚的接线（可直接照抄落图）</div>
+  <div class="meta">
+    <span class="tag">依据：实物照片 ×4 + 已核对照</span>
+    <span class="tag">规模：22 元件 / 29 网络</span>
+    <span class="tag">版本：V2（2026-10-16）</span>
+    <span class="tag">配套：PCB/design/out/接线表.md（同源）</span>
+  </div>
+</header>
+
+<h2>① 系统总览</h2>
+<pre>                 ┌─ 官方无线继电器 ─┐
+ 2S 电池(7~8.4V) ─┤                 ├─ VBAT ─┬─ 降压模块2 ─(OUT 调 5.00V)─▶ +5V ── 核心板 5V / 调试口
+                 └─────────────────┘        └─ 降压模块1 ─(OUT 调 5.00V)─▶ VM  ── 两块 DRV8833(VM) + 舵机
+ 全局共地：所有元件 GND 连成一张网（全板唯一地网，不出现 VSS/GNDA 等别名）</pre>
+<table>
+<thead><tr><th>链路</th><th>走向</th></tr></thead>
+<tbody>
+<tr><td>电源</td><td>电池 →（继电器）→ <code>VBAT</code> → 两块降压模块输入；<b>降压模块 2 → <code>+5V</code></b>（只给核心板 + 调试口）；<b>降压模块 1 → <code>VM</code></b>（给两块驱动 + 舵机）</td></tr>
+<tr><td>控制</td><td>PS2 手柄 → 核心板 B3/B4/B5/B6（软件 SPI）；8 路 PWM（A8/A9/A10/A11 + A6/A7/B0/B1）→ DRV8833 ×2 → 四路马达；B7 → 舵机；A2/A3 → 调试口</td></tr>
+<tr><td>使能</td><td>B12 → 两块 DRV8833 的 STBY（三点同网，高电平使能）</td></tr>
+</tbody>
+</table>
+<div class="note warn"><b>两条必须记住的电气红线：</b>① <code>VM</code> 与 <code>+5V</code> 是<b>两条独立的网</b>（两块 mini 的输出），任何情况下不许合并；② 全板只有一张 GND 网。</div>
+
+<h2>② 模块逐脚接线（V2 落图照抄）</h2>
+
+<h3>1. 电池输入端子（建议位号 J1 / 你画的“电源”）</h3>
+<table>
+<thead><tr><th>脚</th><th>接</th><th>网络</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>电池正（经无线继电器）</td><td><span class="badge b-pwr">VBAT</span></td></tr>
+<tr><td class="num">2</td><td>电池负</td><td><span class="badge b-pwr">GND</span></td></tr>
+</tbody>
+</table>
+
+<h3>2. 降压模块 1（VM 路 → 驱动 + 舵机）<span class="kv">· 实物：方形、四角焊盘，丝印 OUT+ 左上 / OUT− 右上 / IN+ 左下 / IN− 右下</span></h3>
+<table>
+<thead><tr><th>侧</th><th>脚位（按实物）</th><th>接</th><th>网络</th></tr></thead>
+<tbody>
+<tr><td>左块</td><td>第 1 位（上）</td><td>OUT+</td><td><span class="badge b-pwr">VM</span>（驱动 + 舵机 5.0V）</td></tr>
+<tr><td>左块</td><td>第 6 位（下）</td><td>IN+</td><td><span class="badge b-pwr">VBAT</span></td></tr>
+<tr><td>右块</td><td>第 1 位（上）</td><td>OUT−</td><td><span class="badge b-pwr">GND</span></td></tr>
+<tr><td>右块</td><td>第 6 位（下）</td><td>IN−</td><td><span class="badge b-pwr">GND</span></td></tr>
+</tbody>
+</table>
+<div class="note">⚠ 注意 OUT+ 与 IN+ <b>不是同一个网</b>——一个去 VM、一个接 VBAT。输出设 <b>5.0V</b>（不是 6V：2S 电池后半程压差不足会不稳压）。</div>
+
+<h3>3. 降压模块 2（+5V 路 → 核心板）</h3>
+<table>
+<thead><tr><th>侧</th><th>脚位（按实物）</th><th>接</th><th>网络</th></tr></thead>
+<tbody>
+<tr><td>左块</td><td>第 1 位（上）</td><td>OUT+</td><td><span class="badge b-pwr">+5V</span>（核心板专用；<b>与 C8T6 左列第 18 脚 5V 同网</b>）</td></tr>
+<tr><td>左块</td><td>第 6 位（下）</td><td>IN+</td><td><span class="badge b-pwr">VBAT</span></td></tr>
+<tr><td>右块</td><td>第 1 位（上）</td><td>OUT−</td><td><span class="badge b-pwr">GND</span></td></tr>
+<tr><td>右块</td><td>第 6 位（下）</td><td>IN−</td><td><span class="badge b-pwr">GND</span></td></tr>
+</tbody>
+</table>
+<div class="note">上电前把输出调到 <b>5.00V</b>（空载调、带载复测）。</div>
+
+<h3>4. STM32 核心板 · 左列（建议位号 U3A）<span class="kv">· 1 脚靠 USB 端，自上而下 20 脚</span></h3>
+<table>
+<thead><tr><th>脚</th><th>丝印</th><th>网络（语义名 / 你图里的引脚名写法）</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>B12</td><td><span class="badge b-net">DRV_STBY</span>（B12）</td><td>两块驱动使能，三点同网</td></tr>
+<tr><td class="num">2,3,4</td><td>B13,B14,B15</td><td><span class="badge b-nc">NC ×</span></td><td>悬空</td></tr>
+<tr><td class="num">5</td><td>A8</td><td><span class="badge b-net">DRV_F_AIN2</span>（A8）</td><td>TIM1_CH1</td></tr>
+<tr><td class="num">6</td><td>A9</td><td><span class="badge b-net">DRV_F_BIN2</span>（A9）</td><td>TIM1_CH2</td></tr>
+<tr><td class="num">7</td><td>A10</td><td><span class="badge b-net">DRV_R_AIN2</span>（A10）</td><td>TIM1_CH3</td></tr>
+<tr><td class="num">8</td><td>A11</td><td><span class="badge b-net">DRV_R_BIN2</span>（A11）</td><td>TIM1_CH4</td></tr>
+<tr><td class="num">9,10</td><td>A12,A15</td><td><span class="badge b-nc">NC ×</span></td><td>悬空</td></tr>
+<tr><td class="num">11</td><td>B3</td><td><span class="badge b-net">PS2_CS</span>（B3）</td><td>PB3 须关 JTAG 保 SWD</td></tr>
+<tr><td class="num">12</td><td>B4</td><td><span class="badge b-net">PS2_CLK</span>（B4）</td><td>PB4 同上；禁用 TIM3 部分重映射</td></tr>
+<tr><td class="num">13</td><td>B5</td><td><span class="badge b-net">PS2_CMD</span>（B5）</td><td>软件 SPI 主出</td></tr>
+<tr><td class="num">14</td><td>B6</td><td><span class="badge b-net">PS2_DAT</span>（B6）</td><td>软件 SPI 主入</td></tr>
+<tr><td class="num">15</td><td>B7</td><td><span class="badge b-net">SRV_PWM</span>（B7）</td><td>TIM4_CH2，50Hz</td></tr>
+<tr><td class="num">16,17</td><td>B8,B9</td><td><span class="badge b-nc">NC ×</span></td><td>悬空</td></tr>
+<tr><td class="num">18</td><td>5V</td><td><span class="badge b-pwr">+5V</span></td><td>核心板供电（← 降压模块2 的 +5V，同网）</td></tr>
+<tr><td class="num">19</td><td>G</td><td><span class="badge b-pwr">GND</span></td><td></td></tr>
+<tr><td class="num">20</td><td>3V3</td><td><span class="badge b-pwr">+3V3</span></td><td>给 PS2 接收器</td></tr>
+</tbody>
+</table>
+
+<h3>5. STM32 核心板 · 右列（建议位号 U3B）</h3>
+<table>
+<thead><tr><th>脚</th><th>丝印</th><th>网络</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>G</td><td><span class="badge b-pwr">GND</span></td><td></td></tr>
+<tr><td class="num">2</td><td>G</td><td><span class="badge b-pwr">GND</span></td><td>两处 G 都接（内部本就连通，接双保险）</td></tr>
+<tr><td class="num">3</td><td>3.3</td><td><span class="badge b-pwr">+3V3</span></td><td>与左列 3V3 同一网</td></tr>
+<tr><td class="num">4</td><td>RES</td><td><span class="badge b-nc">NC ×</span></td><td>复位脚，本设计不接</td></tr>
+<tr><td class="num">5,6</td><td>B11,B10</td><td><span class="badge b-nc">NC ×</span></td><td>悬空</td></tr>
+<tr><td class="num">7</td><td>B1</td><td><span class="badge b-net">DRV_R_BIN1</span>（B1）</td><td>TIM3_CH4</td></tr>
+<tr><td class="num">8</td><td>B0</td><td><span class="badge b-net">DRV_R_AIN1</span>（B0）</td><td>TIM3_CH3</td></tr>
+<tr><td class="num">9</td><td>A7</td><td><span class="badge b-net">DRV_F_BIN1</span>（A7）</td><td>TIM3_CH2</td></tr>
+<tr><td class="num">10</td><td>A6</td><td><span class="badge b-net">DRV_F_AIN1</span>（A6）</td><td>TIM3_CH1</td></tr>
+<tr><td class="num">11,12</td><td>A5,A4</td><td><span class="badge b-nc">NC ×</span></td><td>悬空</td></tr>
+<tr><td class="num">13</td><td>A3</td><td><span class="badge b-net">DBG_RX</span>（A3）</td><td>USART2_RX</td></tr>
+<tr><td class="num">14</td><td>A2</td><td><span class="badge b-net">DBG_TX</span>（A2）</td><td>USART2_TX</td></tr>
+<tr><td class="num">15～20</td><td>A1,A0,C15,C14,C13,VB</td><td><span class="badge b-nc">NC ×</span></td><td>悬空（VB 为备用电池脚）</td></tr>
+</tbody>
+</table>
+
+<h3>6. DRV8833 前轮（建议位号 U4A / U4B）<span class="kv">· 实物 2×8：左列控制、右列电源输出</span></h3>
+<table>
+<thead><tr><th>左列脚</th><th>丝印</th><th>网络</th><th>｜</th><th>右列脚</th><th>丝印</th><th>网络</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>NC</td><td><span class="badge b-nc">×</span></td><td>｜</td><td class="num">1</td><td>VM</td><td><span class="badge b-pwr">VM</span></td></tr>
+<tr><td class="num">2</td><td>AIN2</td><td><span class="badge b-net">DRV_F_AIN2</span>（A8）</td><td>｜</td><td class="num">2</td><td>NC</td><td><span class="badge b-nc">×</span></td></tr>
+<tr><td class="num">3</td><td>AIN1</td><td><span class="badge b-net">DRV_F_AIN1</span>（A6）</td><td>｜</td><td class="num">3</td><td>GND</td><td><span class="badge b-pwr">GND</span></td></tr>
+<tr><td class="num">4</td><td>STBY</td><td><span class="badge b-net">DRV_STBY</span>（B12）</td><td>｜</td><td class="num">4</td><td>AO1</td><td><span class="badge b-m">MOTOR_FL_1</span></td></tr>
+<tr><td class="num">5</td><td>BIN1</td><td><span class="badge b-net">DRV_F_BIN1</span>（A7）</td><td>｜</td><td class="num">5</td><td>AO2</td><td><span class="badge b-m">MOTOR_FL_2</span></td></tr>
+<tr><td class="num">6</td><td>BIN2</td><td><span class="badge b-net">DRV_F_BIN2</span>（A9）</td><td>｜</td><td class="num">6</td><td>BO2</td><td><span class="badge b-m">MOTOR_FR_2</span></td></tr>
+<tr><td class="num">7</td><td>NC</td><td><span class="badge b-nc">×</span></td><td>｜</td><td class="num">7</td><td>BO1</td><td><span class="badge b-m">MOTOR_FR_1</span></td></tr>
+<tr><td class="num">8</td><td>GND</td><td><span class="badge b-pwr">GND</span></td><td>｜</td><td class="num">8</td><td>GND</td><td><span class="badge b-pwr">GND</span></td></tr>
+</tbody>
+</table>
+<div class="note">右列 <b>BO2 在 BO1 上方</b>（实物丝印如此）；右列两个 GND（3、8 脚）<b>都要接</b>（大电流回路的双保险）。</div>
+
+<h3>7. DRV8833 后轮（建议位号 U5A / U5B）</h3>
+<table>
+<thead><tr><th>左列脚</th><th>丝印</th><th>网络</th><th>｜</th><th>右列脚</th><th>丝印</th><th>网络</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>NC</td><td><span class="badge b-nc">×</span></td><td>｜</td><td class="num">1</td><td>VM</td><td><span class="badge b-pwr">VM</span></td></tr>
+<tr><td class="num">2</td><td>AIN2</td><td><span class="badge b-net">DRV_R_AIN2</span>（A10）</td><td>｜</td><td class="num">2</td><td>NC</td><td><span class="badge b-nc">×</span></td></tr>
+<tr><td class="num">3</td><td>AIN1</td><td><span class="badge b-net">DRV_R_AIN1</span>（B0）</td><td>｜</td><td class="num">3</td><td>GND</td><td><span class="badge b-pwr">GND</span></td></tr>
+<tr><td class="num">4</td><td>STBY</td><td><span class="badge b-net">DRV_STBY</span>（B12）</td><td>｜</td><td class="num">4</td><td>AO1</td><td><span class="badge b-m">MOTOR_RL_1</span></td></tr>
+<tr><td class="num">5</td><td>BIN1</td><td><span class="badge b-net">DRV_R_BIN1</span>（B1）</td><td>｜</td><td class="num">5</td><td>AO2</td><td><span class="badge b-m">MOTOR_RL_2</span></td></tr>
+<tr><td class="num">6</td><td>BIN2</td><td><span class="badge b-net">DRV_R_BIN2</span>（A11）</td><td>｜</td><td class="num">6</td><td>BO2</td><td><span class="badge b-m">MOTOR_RR_1</span></td></tr>
+<tr><td class="num">7</td><td>NC</td><td><span class="badge b-nc">×</span></td><td>｜</td><td class="num">7</td><td>BO1</td><td><span class="badge b-m">MOTOR_RR_2</span></td></tr>
+<tr><td class="num">8</td><td>GND</td><td><span class="badge b-pwr">GND</span></td><td>｜</td><td class="num">8</td><td>GND</td><td><span class="badge b-pwr">GND</span></td></tr>
+</tbody>
+</table>
+<div class="note">后轮右列与左前是<b>镜像接法</b>（BO2→RR_1、BO1→RR_2），与面包板上跑通的方向一致。</div>
+
+<h3>8. 电容组 C1–C6</h3>
+<table>
+<thead><tr><th>位号</th><th>规格</th><th>脚 1 / +</th><th>脚 2 / −</th><th>位置要求</th></tr></thead>
+<tbody>
+<tr><td>C1</td><td>470µF / 16V 电解</td><td><span class="badge b-pwr">VM</span></td><td><span class="badge b-pwr">GND</span></td><td>紧贴前驱 VM 脚（≤5mm）</td></tr>
+<tr><td>C2</td><td>470µF / 16V 电解</td><td><span class="badge b-pwr">VM</span></td><td><span class="badge b-pwr">GND</span></td><td>紧贴后驱 VM 脚（≤5mm）</td></tr>
+<tr><td>C3</td><td>100µF / 10V 电解</td><td><span class="badge b-pwr">+5V</span></td><td><span class="badge b-pwr">GND</span></td><td>靠 +5V 模块（2 号）输出</td></tr>
+<tr><td>C4</td><td>0.1µF（104）瓷片</td><td><span class="badge b-pwr">VM</span></td><td><span class="badge b-pwr">GND</span></td><td>与 C1/C2 并联</td></tr>
+<tr><td>C5</td><td>0.1µF（104）瓷片</td><td><span class="badge b-pwr">+5V</span></td><td><span class="badge b-pwr">GND</span></td><td>靠 +5V 模块（2 号）</td></tr>
+<tr><td>C6</td><td>100~220µF / 16V 电解</td><td><span class="badge b-pwr">VBAT</span></td><td><span class="badge b-pwr">GND</span></td><td>靠电池输入 + 两块 mini 的 IN</td></tr>
+</tbody>
+</table>
+
+<h3>9. 马达端子 J2–J5（板下边缘）</h3>
+<table>
+<thead><tr><th>端子</th><th>脚 1</th><th>脚 2</th><th>接到</th></tr></thead>
+<tbody>
+<tr><td>J2（左前 FL）</td><td>MOTOR_FL_1</td><td>MOTOR_FL_2</td><td>前驱 AO1 / AO2</td></tr>
+<tr><td>J3（右前 FR）</td><td>MOTOR_FR_1</td><td>MOTOR_FR_2</td><td>前驱 BO1 / BO2</td></tr>
+<tr><td>J4（左后 RL）</td><td>MOTOR_RL_1</td><td>MOTOR_RL_2</td><td>后驱 AO1 / AO2</td></tr>
+<tr><td>J5（右后 RR）</td><td>MOTOR_RR_1</td><td>MOTOR_RR_2</td><td>后驱 BO2 / BO1（镜像）</td></tr>
+</tbody>
+</table>
+<div class="note">同一电机的两个脚必须是<b>两个不同的网名</b>（_1/_2）——同名即短路。方向不对时整组对调端子线即可。</div>
+
+<h3>10. 舵机接口 J6（板右边缘）</h3>
+<table>
+<thead><tr><th>脚</th><th>丝印</th><th>网络</th><th>舵机线色</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>S</td><td><span class="badge b-net">SRV_PWM</span>（B7）</td><td>黄（信号）</td></tr>
+<tr><td class="num">2</td><td>V</td><td><span class="badge b-pwr">VM</span> ← 注意：是 VM，不是 +5V</td><td>红</td></tr>
+<tr><td class="num">3</td><td>G</td><td><span class="badge b-pwr">GND</span></td><td>棕/黑</td></tr>
+</tbody>
+</table>
+
+<h3>11. PS2 接收器接口 J7（板右边缘）<span class="kv">· 1–4 脚顺序待实物核对</span></h3>
+<table>
+<thead><tr><th>方案</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead>
+<tbody>
+<tr><td>口述顺序（面包板接法）</td><td>DAT(B6)</td><td>CMD(B5)</td><td>CS(B3)</td><td>CLK(B4)</td><td>+3V3</td><td>GND</td></tr>
+<tr><td>实物丝印记录顺序</td><td>CS(B3)</td><td>CMD(B5)</td><td>DAT(B6)</td><td>CLK(B4)</td><td>+3V3</td><td>GND</td></tr>
+</tbody>
+</table>
+<div class="note warn">两个方案只差 1、3 脚对调。接收器到手后<b>对着丝印一锤定音</b>；在那之前 V2 先锁一种画法即可，但别两个方案混着画。VCC 接 <b>+3V3</b>（不是 +5V）。</div>
+
+<h3>12. 调试扩展口 J8（板右边缘，可选保留）</h3>
+<table>
+<thead><tr><th>脚</th><th>网络</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td><span class="badge b-net">DBG_TX</span>（A2）</td></tr>
+<tr><td class="num">2</td><td><span class="badge b-net">DBG_RX</span>（A3）</td></tr>
+<tr><td class="num">3</td><td><span class="badge b-pwr">+5V</span></td></tr>
+<tr><td class="num">4</td><td><span class="badge b-pwr">GND</span></td></tr>
+</tbody>
+</table>
+
+<h2>③ 网络总表（29 条）</h2>
+<table>
+<thead><tr><th>网络</th><th>端点</th><th>建议线宽</th></tr></thead>
+<tbody>
+<tr><td>VBAT</td><td>J1.1、mini#1.IN+、mini#2.IN+、C6.+</td><td>加宽 + 铺铜补强</td></tr>
+<tr><td>GND</td><td>全板所有 GND（J1.2、两 mini 的 IN−/OUT−、核心板 G/G、DRV 各 GND、六颗电容、J6.3、J7.6、J8.4）</td><td>铺铜</td></tr>
+<tr><td>+5V</td><td>降压模块2.OUT+、核心板 5V（左列 18 脚）、C3.+、C5.1、J8.3</td><td>10 mil（轻载）</td></tr>
+<tr><td>+3V3</td><td>核心板 3V3/3.3、J7.5</td><td>10 mil</td></tr>
+<tr><td>VM</td><td>降压模块1.OUT+、前驱 VM、后驱 VM、C1.+、C2.+、C4.1、J6.2</td><td>加宽 + 铺铜补强</td></tr>
+<tr><td>DRV_F_AIN2 / BIN2</td><td>A8 ↔ 前驱 AIN2；A9 ↔ 前驱 BIN2</td><td>10 mil</td></tr>
+<tr><td>DRV_R_AIN2 / BIN2</td><td>A10 ↔ 后驱 AIN2；A11 ↔ 后驱 BIN2</td><td>10 mil</td></tr>
+<tr><td>DRV_F_AIN1 / BIN1</td><td>A6 ↔ 前驱 AIN1；A7 ↔ 前驱 BIN1</td><td>10 mil</td></tr>
+<tr><td>DRV_R_AIN1 / BIN1</td><td>B0 ↔ 后驱 AIN1；B1 ↔ 后驱 BIN1</td><td>10 mil</td></tr>
+<tr><td>DRV_STBY</td><td>B12、前驱 STBY、后驱 STBY</td><td>10 mil</td></tr>
+<tr><td>PS2_CS / CLK / CMD / DAT</td><td>B3/B4/B5/B6 ↔ J7 对应脚</td><td>10 mil</td></tr>
+<tr><td>SRV_PWM</td><td>B7 ↔ J6.1</td><td>10 mil</td></tr>
+<tr><td>DBG_TX / DBG_RX</td><td>A2/A3 ↔ J8.1/J8.2</td><td>10 mil</td></tr>
+<tr><td>MOTOR_FL_1/2、FR_1/2、RL_1/2、RR_1/2</td><td>各驱动输出 ↔ 对应马达端子（共 8 条，每条 2 端）</td><td>30 mil</td></tr>
+</tbody>
+</table>
+
+<h2>④ V2 草图对照检查单（照你 10-16 晚的截图逐条核）</h2>
+<table>
+<thead><tr><th>#</th><th>部位</th><th>要做什么</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>两块降压模块的 “VCC” 残留（重点）</td><td>已按你确认锁定：<b>降压模块2左 OUT+ → <code>+5V</code>（与 C8T6左 5V 同网）</b>；<b>降压模块1左 OUT+ → <code>VM</code></b>；两块 IN+ → <code>VBAT</code>。<b>把图上所有 “VCC” 标签全部替换掉</b>——VCC 不在 29 网体系里，且 IN+ 与 OUT+ 绝不能同名（同名 = 输入输出短接）</td></tr>
+<tr><td class="num">2</td><td>两块驱动的 VM</td><td>接 <code>VM</code> 网，<b>不要接 +5V</b>（+5V 是 mini#1 的，合并=两路降压并联）</td></tr>
+<tr><td class="num">3</td><td>四个 DRV 块前后配对</td><td>前驱输入 = A8/A9/A7/A6；后驱输入 = A10/B0/B1/A11。逐块核对，别前后装反</td></tr>
+<tr><td class="num">4</td><td>DRV 右列 3、8 脚</td><td>两个 GND 都接 GND，<b>不要打 ×</b>；右列只有 2 脚打 ×</td></tr>
+<tr><td class="num">5</td><td>马达输出标签</td><td>同一电机的两条线用两个不同网名（如 左前电机A / 左前电机B）——现在端子还没接通，记得连上</td></tr>
+<tr><td class="num">6</td><td>舵机电源脚</td><td>接 <code>VM</code>（截图里看着像 +5V，核一下）</td></tr>
+<tr><td class="num">7</td><td>PS2 1–4 脚顺序</td><td>按 ②-11 的两个方案锁一个，先别混</td></tr>
+<tr><td class="num">8</td><td>位号</td><td>中文位号会被 DRC 提示“不符合规则”——改成：电源→<code>J1</code>、降压模块1→<code>U1</code>、2→<code>U2</code>、C8T6左/右→<code>U3A/U3B</code>、四块驱动→<code>U4A/U4B/U5A/U5B</code>、舵机→<code>J6</code>、PS2→<code>J7</code>、马达端子→<code>J2–J5</code>、电容→<code>C1–C6</code></td></tr>
+</tbody>
+</table>
+
+<h2>⑤ 待确认清单（不影响落图，影响下单前定稿）</h2>
+<table>
+<thead><tr><th>项</th><th>怎么核</th></tr></thead>
+<tbody>
+<tr><td>PS2 接收器 1–4 脚顺序</td><td>实物到手对丝印（见 ②-11）</td></tr>
+<tr><td>核心板两列针距（估 15.24mm）</td><td>卡尺实测，PCB 布局前确认</td></tr>
+<tr><td>DRV8833 两排针距（估 10.16mm）</td><td>实测</td></tr>
+<tr><td>mini 模块四角孔距 + 背面平整度</td><td>实测（决定 U1/U2 的 PCB 封装做法）</td></tr>
+<tr><td>DRV8833 模块是否有 VCC 逻辑脚</td><td>对实物丝印（本设计按无处理）</td></tr>
+</tbody>
+</table>
+
+<footer>
+依据：2026-10-15 实物照片 4 张（DRV8833 / mini 降压 / STM32 核心板 / 面包板整车）；与 <code>PCB/design/out/接线表.md</code>、<code>NETLIST.csv</code> 同源。V2 设计任何改动请同步回接线表，保持“单一数据源”。生成日期：2026-10-16。修订：10-16 晚按车主编号——<b>降压模块2 = +5V 路（供核心板）、降压模块1 = VM 路（供驱动/舵机）</b>。
+</footer>
+
+</div>
+</body>
+</html>
