@@ -16,7 +16,7 @@
 | `CRTC2026_SmartCar_BaseBoard_V2/` | V2 立创 EDA 工程（原理图 / PCB / 面板）+ `gerber/Gerber_PCB1_2026-10-17.zip`（16 文件：铜箔/丝印/阻焊/板框/钻孔/飞针测试） |
 | `CRTC2026_SmartCar_BaseBoard_V1/` | V1 立创 EDA 工程（历史版本） |
 | `CRTC.elib` | 自建元件库（DRV8833 16 脚 / mini 降压 4 脚 / STM32 核心板 40 脚等符号与封装） |
-| `design/` | V1 设计单一数据源脚本与产物：BOM.csv、NETLIST.csv、接线表.md、布局坐标.csv、线宽与电流预算.md、装配核对表.md、施工单.html、ERC报告.txt |
+| `design/` | V1 设计单一数据源脚本与产物：BOM.csv、NETLIST.csv、接线表.md、布局坐标.csv、线宽与电流预算.md、装配核对表.md、施工单.html、ERC报告.txt（**历史口径**：主干 100mil + 补强策略；V2 实际为 1.0mm 主干 + 双面 GND 铺铜，见《工程日志》） |
 | `V2设计方案-实物对照版.html` | V2 设计依据存档（12 模块逐脚表 + 29 网总表 + 审查检查单） |
 
 ## 状态（2026-10-18）
