@@ -1,0 +1,6 @@
+# 大二进制模型文件走 Git LFS（与 README「外部资料与入库规划」一致）
+# 使用前提：本机安装 git-lfs 并执行过一次 `git lfs install`（本机已验证 3.7.1 可用）
+*.stl  filter=lfs diff=lfs merge=lfs -text
+*.step filter=lfs diff=lfs merge=lfs -text
+*.stp  filter=lfs diff=lfs merge=lfs -text
+*.3mf  filter=lfs diff=lfs merge=lfs -text

@@ -21,13 +21,15 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 .ipynb_checkpoints/
-# YOLO 训练输出（模型权重如需入库请走 Git LFS 或 Release 外链，见 README）
+# YOLO 训练输出（模型权重如需入库请走 Git Release 外链或 LFS，见 README）
 runs/
+*.pt
 # 数据集（体积大，不入库）
 datasets/
 dataset_images/
 
 # ---------- 编辑器与系统临时文件 ----------
+state/
 # 如需共享 VS Code 配置，改为选择性提交（例如仅保留 !.vscode/settings.json）
 .vscode/
 .idea/
@@ -41,7 +43,8 @@ desktop.ini
 # ---------- CAD / EDA 临时与备份文件 ----------
 *.bak
 *.tmp
-# 立创 EDA 等工程软件的备份后缀如与上不符，按实际补充
+*.epro2
+# 立创 EDA 自动备份（.epro2）；其它工程备份后缀按实际补充
 
 # ---------- 压缩包（大文件走外链，见 README） ----------
 *.zip
