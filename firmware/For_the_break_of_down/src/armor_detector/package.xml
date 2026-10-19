@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>armor_detector</name>
+  <version>0.0.1</version>
+  <description>RoboMaster armor detector node using YOLO and PnP</description>
+  <maintainer email="your_email@example.com">YourName</maintainer>
+  <license>Apache-2.0</license>
+
+  <!-- 构建工具依赖 -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- 核心 ROS 2 依赖 -->
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>cv_bridge</depend>
+  <depend>image_transport</depend>
+  
+  <!-- 自定义消息依赖 -->
+  <depend>aim_interfaces</depend>
+
+  <!-- 测试依赖 -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

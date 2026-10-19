@@ -1,0 +1,9 @@
+armor_detector:
+  ros__parameters:
+    camera_fx: 1711.8970199440023
+    camera_fy: 1001.332398981487
+    camera_cx: 364.650314698814
+    camera_cy: 276.8012133871385
+    dist_k1: 6.222613267402825
+    dist_k2: -102.78514719161952
+    # ...外参...
