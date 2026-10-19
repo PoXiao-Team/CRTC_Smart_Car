@@ -1,0 +1,8 @@
+2026-10-18 L1 hold-to-boost: normal500 fast750; R1 still required.
+Servo retained step10us/20ms, range600..2000us initial1500us.
+D-pad priority retained. TIM2 guard added; IWDG starts after HAL_Init before clock setup; reset/loop/fault diagnostics added.
+CubeIDE1.18.1 Debug build: 0 errors, 0 warnings.
+Flash=7048 bytes; allocated RAM=2440 bytes.
+89 actual-ELF simulation checks PASS. TIM2 stopped-counter injection tested; IWDG hardware reset and electrical conditions not tested.
+Reported power/hang root cause remains unconfirmed.
+SHA256=5781b2d7df80d0560a1ebadf53f947eea6a95b297113eddca3b43134bd17373c
